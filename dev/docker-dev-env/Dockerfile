@@ -77,5 +77,6 @@ COPY . .
 
 # RUN make dev-ui
 
+# RUN gomobile build -target=android
 RUN mkdir /output
 RUN CC=$TOOLCHAIN_DIR/bin/clang CXX=$TOOLCHAIN_DIR/bin/clang++ GOOS=android GOARCH=$ARCH CGO_ENABLED=1 GOARM=7 go build -x -o /output/nomad
