@@ -15,6 +15,8 @@ job "example8" {
 
   datacenters = ["dc1"]
 
+  type = "batch"
+
   group "cache" {
     # The "count" parameter specifies the number of the task groups that should
     restart {
