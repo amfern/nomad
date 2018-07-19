@@ -2,7 +2,7 @@
 log_level = "DEBUG"
 
 # Setup data dir
-data_dir = "/storage/client1"
+data_dir = "/data/data/nomad/storage/client1"
 
 # Give the agent a unique name. Defaults to hostname
 name = "client1"

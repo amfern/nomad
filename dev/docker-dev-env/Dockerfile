@@ -4,10 +4,15 @@
 # adb remount
 # adb push /tmp/nomad /system/xbin/
 
-# cd /storage/emulated/0
+# mkdir /data/data/nomad
+# cd /data/data/nomad
+# vim /data/system/packages.list
+# nomad 10113 0 /data/user/0/nomad default:targetSdkVersion=27 3003
 # nomad agent -config /storage/emulated/0/server.hcl
-# nomad agent -config client1.hcl -network-interface=wlan0
-# nomad agent -config client2.hcl -network-interface=wlan0
+# ./nomad agent -config client1.hcl -network-interface=wlan0
+# ./nomad agent -config client2.hcl -network-interface=wlan0
+
+# ./dist/nomad job run dev/docker-dev-env/example.nomad
 
 FROM debian:sid
 
@@ -29,7 +34,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	                            wget \
                               curl \
                               python \
-                              apt-transport-https
+                              apt-transport-https \
+                              libtinfo5
 
 RUN wget -q --output-document=android-ndk.zip https://dl.google.com/android/repository/android-ndk-r17-linux-x86_64.zip && \
 	  unzip android-ndk.zip && \
@@ -76,6 +82,7 @@ COPY . .
 #             apt-get install -y --no-install-recommends yarn
 
 # RUN make dev-ui
+# RUN go build -x -o /output/nomad
 
 # RUN gomobile build -target=android
 RUN mkdir /output
