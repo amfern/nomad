@@ -48,7 +48,6 @@ RUN wget -q --output-document=android-ndk.zip https://dl.google.com/android/repo
 # RUN go get golang.org/x/mobile/cmd/gomobile
 # RUN gomobile init -ndk /opt/android-ndk-linux
 
-WORKDIR /go/src/github.com/hashicorp/nomad
 
 # -------------- setup toolchain -----------------
 env ARCH arm
@@ -67,7 +66,11 @@ RUN CC=$TOOLCHAIN_DIR/bin/clang CXX=$TOOLCHAIN_DIR/bin/clang++ GOOS=android GOAR
 # Add the standalone toolchain to the search path.
 ENV PATH $PATH:$TOOLCHAIN_DIR
 
-RUN go get -v # COPY . .
+
+WORKDIR /go/src/github.com/hashicorp/nomad
+COPY . .
+
+# RUN go get -v
 
 # make dev-ui
 # RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
