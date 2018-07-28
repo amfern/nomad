@@ -14,13 +14,12 @@
 
 # ./dist/nomad job run dev/docker-dev-env/example.nomad
 
-FROM debian:sid
+FROM golang:rc
 
 RUN apt update -y && \
     apt install -y \
         build-essential \
         git \
-        golang \
         liblxc1
 
 # --------------------- start android ndk --------------------------
@@ -43,20 +42,11 @@ RUN wget -q --output-document=android-ndk.zip https://dl.google.com/android/repo
 	  mv android-ndk-r17 android-ndk-linux
 # --------------------- end android ndk --------------------------
 
-# ------- configure golang --------
-ENV GOPATH /go
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
-
 # install gomobile
 # RUN go get golang.org/x/mobile/cmd/gomobile
 # RUN gomobile init -ndk /opt/android-ndk-linux
 
 WORKDIR /go/src/github.com/hashicorp/nomad
-
-# we need version go1.11 to compile on android
-RUN go get golang.org/dl/go1.11beta2 && \
-       go1.11beta2 download
-# ------- end configure golang --------
 
 # -------------- setup toolchain -----------------
 env ARCH arm
@@ -67,9 +57,9 @@ RUN $ANDROID_NDK/build/tools/make_standalone_toolchain.py \
     --stl=libc++ \
     --install-dir=$TOOLCHAIN_DIR
 
-RUN CC=$TOOLCHAIN_DIR/bin/clang CXX=$TOOLCHAIN_DIR/bin/clang++ GOOS=android GOARCH=$ARCH CGO_ENABLED=1 GOARM=7 go1.11beta2 install std
+RUN CC=$TOOLCHAIN_DIR/bin/clang CXX=$TOOLCHAIN_DIR/bin/clang++ GOOS=android GOARCH=$ARCH CGO_ENABLED=1 GOARM=7 go install std
 
-RUN CC=$TOOLCHAIN_DIR/bin/clang CXX=$TOOLCHAIN_DIR/bin/clang++ GOOS=android GOARCH=$ARCH CGO_ENABLED=1 GOARM=7 go1.11beta2 install os/user
+RUN CC=$TOOLCHAIN_DIR/bin/clang CXX=$TOOLCHAIN_DIR/bin/clang++ GOOS=android GOARCH=$ARCH CGO_ENABLED=1 GOARM=7 go install os/user
 
 
 # Add the standalone toolchain to the search path.
@@ -91,4 +81,4 @@ COPY . .
 
 # RUN gomobile build -target=android
 RUN mkdir /output
-RUN CC=$TOOLCHAIN_DIR/bin/clang CXX=$TOOLCHAIN_DIR/bin/clang++ GOOS=android GOARCH=$ARCH CGO_ENABLED=1 GOARM=7 go1.11beta2 build -o /output/nomad
+RUN CC=$TOOLCHAIN_DIR/bin/clang CXX=$TOOLCHAIN_DIR/bin/clang++ GOOS=android GOARCH=$ARCH CGO_ENABLED=1 GOARM=7 go build -o /output/nomad
