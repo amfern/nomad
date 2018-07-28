@@ -14,6 +14,8 @@
 
 # ./dist/nomad job run dev/docker-dev-env/example.nomad
 
+# nomad agent -dev -data-dir=`pwd` -network-interface=wlan0
+
 FROM golang:rc
 
 RUN apt update -y && \
@@ -65,7 +67,7 @@ RUN CC=$TOOLCHAIN_DIR/bin/clang CXX=$TOOLCHAIN_DIR/bin/clang++ GOOS=android GOAR
 # Add the standalone toolchain to the search path.
 ENV PATH $PATH:$TOOLCHAIN_DIR
 
-COPY . .
+RUN go get -v # COPY . .
 
 # make dev-ui
 # RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
@@ -82,3 +84,21 @@ COPY . .
 # RUN gomobile build -target=android
 RUN mkdir /output
 RUN CC=$TOOLCHAIN_DIR/bin/clang CXX=$TOOLCHAIN_DIR/bin/clang++ GOOS=android GOARCH=$ARCH CGO_ENABLED=1 GOARM=7 go build -o /output/nomad
+
+
+
+# ############################## example output on debian ############################
+# default via 10.0.0.138 dev eno1
+# ip route
+# 10.0.0.0/24 dev eno1 proto kernel scope link src 10.0.0.18 
+# 172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown 
+# 192.168.100.0/24 dev virbr0 proto kernel scope link src 192.168.100.1
+
+# ####################### example output on android ####################
+# ip route
+# 10.0.0.0/24 dev wlan0  proto kernel  scope link  src 10.0.0.32
+
+# android doesn't have concept of default gateway
+# in android the first interface in the list is the default
+# need to add new file similar to https://github.com/hashicorp/go-sockaddr/blob/e12d9401a74f025fe672cd1a84b2081c773990d3/route_info_linux.go, route_info_android.go that will select the first interface on the list
+
