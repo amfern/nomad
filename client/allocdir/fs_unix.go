@@ -1,4 +1,4 @@
-// +build darwin dragonfly freebsd linux netbsd openbsd solaris
+// +build darwin dragonfly freebsd linux,!android netbsd openbsd solarsi
 
 package allocdir
 
@@ -30,8 +30,8 @@ var (
 // dropDirPermissions gives full access to a directory to all users and sets
 // the owner to nobody.
 func dropDirPermissions(path string, desired os.FileMode) error {
-	if err := os.Chmod(path, 777); err != nil {
-		return fmt.Errorf("%d Chmod(%v) failed: %v", desired, path, err)
+	if err := os.Chmod(path, desired|0777); err != nil {
+		return fmt.Errorf("Chmod(%v) failed: %v", path, err)
 	}
 
 	// Can't change owner if not root.
@@ -39,24 +39,24 @@ func dropDirPermissions(path string, desired os.FileMode) error {
 		return nil
 	}
 
-	// u, err := user.Lookup("nobody")
-	// if err != nil {
-	// 	return err
-	// }
+	u, err := user.Lookup("nobody")
+	if err != nil {
+		return err
+	}
 
-	// uid, err := getUid(u)
-	// if err != nil {
-	// 	return err
-	// }
+	uid, err := getUid(u)
+	if err != nil {
+		return err
+	}
 
-	// gid, err := getGid(u)
-	// if err != nil {
-	// 	return err
-	// }
+	gid, err := getGid(u)
+	if err != nil {
+		return err
+	}
 
-	// if err := os.Chown(path, uid, gid); err != nil {
-	// 	return fmt.Errorf("Couldn't change owner/group of %v to (uid: %v, gid: %v): %v", path, uid, gid, err)
-	// }
+	if err := os.Chown(path, uid, gid); err != nil {
+		return fmt.Errorf("Couldn't change owner/group of %v to (uid: %v, gid: %v): %v", path, uid, gid, err)
+	}
 
 	return nil
 }

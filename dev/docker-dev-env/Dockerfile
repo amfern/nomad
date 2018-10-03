@@ -72,6 +72,8 @@ COPY . .
 
 # RUN go get -v
 
+RUN go get -d ./...
+
 # make dev-ui
 # RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 # RUN apt-get install -y nodejs
