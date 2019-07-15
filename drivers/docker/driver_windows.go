@@ -4,7 +4,7 @@ import docker "github.com/fsouza/go-dockerclient"
 
 const (
 	// Default network mode for windows containers is nat
-	defaultNetworkMode = "nat"
+	defaultNetworkMode = "default"
 )
 
 //Currently Windows containers don't support host ip in port binding.

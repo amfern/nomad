@@ -85,7 +85,7 @@ func setEnvvars(envBuilder *taskenv.Builder, fsi drivers.FSIsolation, taskDir *a
 		envBuilder.SetSecretsDir(taskDir.SecretsDir)
 	default:
 		// filesystem isolation; use container paths
-		envBuilder.SetAllocDir(allocdir.SharedAllocContainerPath)
+		envBuilder.SetAllocDir(allocdir.SharedAllocContainerPath) // POI
 		envBuilder.SetTaskLocalDir(allocdir.TaskLocalContainerPath)
 		envBuilder.SetSecretsDir(allocdir.TaskSecretsContainerPath)
 	}

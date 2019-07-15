@@ -84,6 +84,7 @@ func windowsSplitRawSpec(raw, destRegex string) ([]string, error) {
 
 	// Must have something back
 	if len(match) == 0 {
+		fmt.Errorf("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
 		return nil, errInvalidSpec(raw)
 	}
 
@@ -298,7 +299,7 @@ func (p *windowsParser) validateMountConfigReg(mnt *mount.Mount, destRegex strin
 	return nil
 }
 func (p *windowsParser) ParseMountRaw(raw, volumeDriver string) (*MountPoint, error) {
-	return p.parseMountRaw(raw, volumeDriver, rxDestination, true, windowsSpecificValidators)
+	return p.parseMountRaw(raw, volumeDriver, rxDestination, false, windowsSpecificValidators)
 }
 
 func (p *windowsParser) parseMountRaw(raw, volumeDriver, destRegex string, convertTargetToBackslash bool, additionalValidators ...mountValidator) (*MountPoint, error) {
@@ -317,6 +318,7 @@ func (p *windowsParser) parseMountRaw(raw, volumeDriver, destRegex string, conve
 		if windowsValidMountMode(arr[1]) {
 			// Destination + Mode is not a valid volume - volumes
 			// cannot include a mode. e.g. /foo:rw
+			fmt.Errorf("JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ")
 			return nil, errInvalidSpec(raw)
 		}
 		// Host Source Path or Name + Destination
@@ -328,6 +330,7 @@ func (p *windowsParser) parseMountRaw(raw, volumeDriver, destRegex string, conve
 		spec.Target = arr[1]
 		mode = arr[2]
 	default:
+		fmt.Errorf("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
 		return nil, errInvalidSpec(raw)
 	}
 	if convertTargetToBackslash {
@@ -360,13 +363,14 @@ func (p *windowsParser) parseMountRaw(raw, volumeDriver, destRegex string, conve
 		mp.Mode = mode
 	}
 	if err != nil {
+		fmt.Errorf("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
 		err = fmt.Errorf("%v: %v", errInvalidSpec(raw), err)
 	}
 	return mp, err
 }
 
 func (p *windowsParser) ParseMountSpec(cfg mount.Mount) (*MountPoint, error) {
-	return p.parseMountSpec(cfg, rxDestination, true, windowsSpecificValidators)
+	return p.parseMountSpec(cfg, rxDestination, false, windowsSpecificValidators)
 }
 func (p *windowsParser) parseMountSpec(cfg mount.Mount, destRegex string, convertTargetToBackslash bool, additionalValidators ...mountValidator) (*MountPoint, error) {
 	if err := p.validateMountConfigReg(&cfg, destRegex, additionalValidators...); err != nil {

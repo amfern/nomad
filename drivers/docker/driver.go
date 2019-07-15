@@ -611,6 +611,11 @@ func (d *Driver) containerBinds(task *drivers.TaskConfig, driverConfig *TaskConf
 	}
 
 	for _, userbind := range driverConfig.Volumes {
+		// TODO: get the os_type from fingerprint maybe
+		// fp.Attributes["driver.docker.os_type"] = pstructs.NewStringAttribute(dockerInfo.OSType)
+		// dockerOSType == "linux"
+
+		// TODO: this is what throw excpetion when relative path is used in windows
 		// This assumes host OS = docker container OS.
 		// Not true, when we support Linux containers on Windows
 		src, dst, mode, err := parseVolumeSpec(userbind, runtime.GOOS)
@@ -625,7 +630,7 @@ func (d *Driver) containerBinds(task *drivers.TaskConfig, driverConfig *TaskConf
 		// Otherwise, we assume we receive a relative path binding in the format
 		// relative/to/task:/also/in/container
 		if taskLocalBindVolume {
-			src = expandPath(task.TaskDir().Dir, src)
+			src = expandPath(task.TaskDir().Dir, src) // POI this is the relative expansion
 		} else {
 			// Resolve dotted path segments
 			src = filepath.Clean(src)
@@ -642,12 +647,12 @@ func (d *Driver) containerBinds(task *drivers.TaskConfig, driverConfig *TaskConf
 		binds = append(binds, bind)
 	}
 
-	if selinuxLabel := d.config.Volumes.SelinuxLabel; selinuxLabel != "" {
-		// Apply SELinux Label to each volume
-		for i := range binds {
-			binds[i] = fmt.Sprintf("%s:%s", binds[i], selinuxLabel)
-		}
-	}
+	// if selinuxLabel := d.config.Volumes.SelinuxLabel; selinuxLabel != "" {
+	// 	// Apply SELinux Label to each volume
+	// 	for i := range binds {
+	// 		binds[i] = fmt.Sprintf("%s:%s", binds[i], selinuxLabel)
+	// 	}
+	// }
 
 	return binds, nil
 }

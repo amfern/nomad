@@ -206,6 +206,7 @@ func validateCgroupPermission(s string) bool {
 // expandPath returns the absolute path of dir, relative to base if dir is relative path.
 // base is expected to be an absolute path
 func expandPath(base, dir string) string {
+	fmt.Printf("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY %s", dir)
 	if filepath.IsAbs(dir) {
 		return filepath.Clean(dir)
 	}
@@ -220,6 +221,7 @@ func isParentPath(parent, path string) bool {
 	return err == nil && !strings.HasPrefix(rel, "..")
 }
 
+// POI
 func parseVolumeSpec(volBind, os string) (hostPath string, containerPath string, mode string, err error) {
 	if os == "windows" {
 		return parseVolumeSpecWindows(volBind)
@@ -230,11 +232,11 @@ func parseVolumeSpec(volBind, os string) (hostPath string, containerPath string,
 func parseVolumeSpecWindows(volBind string) (hostPath string, containerPath string, mode string, err error) {
 	parts, err := windowsSplitRawSpec(volBind, rxDestination)
 	if err != nil {
-		return "", "", "", fmt.Errorf("not <src>:<destination> format")
+		return "", "", "", fmt.Errorf("not <src>:<destination> format: %q", err)
 	}
 
 	if len(parts) < 2 {
-		return "", "", "", fmt.Errorf("not <src>:<destination> format")
+		return "", "", "", fmt.Errorf("not <src>:<destination> format, expected two parts for mount")
 	}
 
 	hostPath = parts[0]
@@ -255,6 +257,7 @@ func parseVolumeSpecLinux(volBind string) (hostPath string, containerPath string
 	// Reconsider updating to use Docker parser when ready to make incompatible changes.
 	parts := strings.Split(volBind, ":")
 	if len(parts) < 2 {
+		fmt.Printf("CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC")
 		return "", "", "", fmt.Errorf("not <src>:<destination> format")
 	}
 

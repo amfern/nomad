@@ -371,7 +371,7 @@ func (b *Builder) Build() *TaskEnv {
 		envMap[AllocDir] = b.allocDir
 	}
 	if b.localDir != "" {
-		envMap[TaskLocalDir] = b.localDir
+		envMap[TaskLocalDir] = b.localDir // POI
 	}
 	if b.secretsDir != "" {
 		envMap[SecretsDir] = b.secretsDir
@@ -664,6 +664,7 @@ func (b *Builder) setNode(n *structs.Node) *Builder {
 	return b
 }
 
+// POI we are setting the alloc dir here
 func (b *Builder) SetAllocDir(dir string) *Builder {
 	b.mu.Lock()
 	b.allocDir = dir

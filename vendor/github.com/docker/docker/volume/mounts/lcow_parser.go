@@ -26,7 +26,7 @@ func (p *lcowParser) ValidateMountConfig(mnt *mount.Mount) error {
 }
 
 func (p *lcowParser) ParseMountRaw(raw, volumeDriver string) (*MountPoint, error) {
-	return p.parseMountRaw(raw, volumeDriver, rxLCOWDestination, false, lcowSpecificValidators)
+	return p.parseMountRaw(raw, volumeDriver, rxLCOWDestination, false, lcowSpecificValidators) // POI
 }
 
 func (p *lcowParser) ParseMountSpec(cfg mount.Mount) (*MountPoint, error) {

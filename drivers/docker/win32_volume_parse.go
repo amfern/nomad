@@ -58,7 +58,9 @@ const (
 	//    -  And can be optional
 
 	// rxDestination is the regex expression for the mount destination
-	rxDestination = `(?P<destination>((?:\\\\\?\\)?([a-z]):((?:[\\/][^\\/:*?"<>\r\n]+)*[\\/]?))|(` + rxPipe + `))`
+	// rxDestination = `(?P<destination>((?:\\\\\?\\)?([a-z]):((?:[\\/][^\\/:*?"<>\r\n]+)*[\\/]?))|(` + rxPipe + `))`
+
+	rxDestination = `(?P<destination>((?:\\\\\?\\)?([a-z]):((?:[\\/][^\\/:*?"<>\r\n]+)*[\\/]?))|(` + rxPipe + `)|([/].*))`
 
 	// Destination (aka container path):
 	//    -  Variation on hostdir but can be a drive followed by colon as well
@@ -98,7 +100,9 @@ var currentFileInfoProvider fileInfoProvider = defaultFileInfoProvider{}
 
 func windowsSplitRawSpec(raw, destRegex string) ([]string, error) {
 	specExp := regexp.MustCompile(`^` + rxSource + destRegex + rxMode + `$`)
+	fmt.Printf("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK, %s", rxSource + destRegex + rxMode)
 	match := specExp.FindStringSubmatch(strings.ToLower(raw))
+	fmt.Printf("rawrawrawrawrawrawrawrawrawrawrawrawrawrawrawrawraw, %s", raw)
 
 	// Must have something back
 	if len(match) == 0 {
