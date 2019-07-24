@@ -42,6 +42,7 @@ type FileRotator struct {
 	baseFileName     string // baseFileName is the base file name of the rotated files
 	logFileIdx       int    // logFileIdx is the current index of the rotated files
 	oldestLogFileIdx int    // oldestLogFileIdx is the index of the oldest log file in a path
+	suffix           string // suffix is appened to the end of the rotated files
 
 	currentFile *os.File // currentFile is the file that is currently getting written
 	currentWr   int64    // currentWr is the number of bytes written to the current file
@@ -59,7 +60,7 @@ type FileRotator struct {
 
 // NewFileRotator returns a new file rotator
 func NewFileRotator(path string, baseFile string, maxFiles int,
-	fileSize int64, logger hclog.Logger) (*FileRotator, error) {
+	fileSize int64, logger hclog.Logger, suffix string) (*FileRotator, error) {
 	logger = logger.Named("rotator")
 	rotator := &FileRotator{
 		MaxFiles: maxFiles,
@@ -67,6 +68,7 @@ func NewFileRotator(path string, baseFile string, maxFiles int,
 
 		path:         path,
 		baseFileName: baseFile,
+		suffix: suffix,
 
 		flushTicker: time.NewTicker(bufferFlushDuration),
 		logger:      logger,
@@ -163,7 +165,7 @@ func (f *FileRotator) nextFile() error {
 	nextFileIdx := f.logFileIdx
 	for {
 		nextFileIdx += 1
-		logFileName := filepath.Join(f.path, fmt.Sprintf("%s.%d", f.baseFileName, nextFileIdx))
+		logFileName := filepath.Join(f.path, fmt.Sprintf("%s.%d%s", f.baseFileName, nextFileIdx, f.suffix))
 		if fi, err := os.Stat(logFileName); err == nil {
 			if fi.IsDir() || fi.Size() >= f.FileSize {
 				continue
@@ -200,7 +202,7 @@ func (f *FileRotator) lastFile() error {
 			continue
 		}
 		if strings.HasPrefix(fi.Name(), prefix) {
-			fileIdx := strings.TrimPrefix(fi.Name(), prefix)
+			fileIdx := strings.TrimSuffix(strings.TrimPrefix(fi.Name(), prefix), f.suffix)
 			n, err := strconv.Atoi(fileIdx)
 			if err != nil {
 				continue
@@ -218,7 +220,7 @@ func (f *FileRotator) lastFile() error {
 
 // createFile opens a new or existing file for writing
 func (f *FileRotator) createFile() error {
-	logFileName := filepath.Join(f.path, fmt.Sprintf("%s.%d", f.baseFileName, f.logFileIdx))
+	logFileName := filepath.Join(f.path, fmt.Sprintf("%s.%d%s", f.baseFileName, f.logFileIdx, f.suffix))
 	cFile, err := os.OpenFile(logFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		return err
@@ -276,7 +278,8 @@ func (f *FileRotator) purgeOldFiles() {
 			// Inserting all the rotated files in a slice
 			for _, fi := range files {
 				if strings.HasPrefix(fi.Name(), f.baseFileName) {
-					fileIdx := strings.TrimPrefix(fi.Name(), fmt.Sprintf("%s.", f.baseFileName))
+					fileIdx := strings.TrimSuffix(
+						strings.TrimPrefix(fi.Name(), fmt.Sprintf("%s.", f.baseFileName)), f.suffix)
 					n, err := strconv.Atoi(fileIdx)
 					if err != nil {
 						f.logger.Error("error extracting file index", "err", err)
@@ -297,7 +300,7 @@ func (f *FileRotator) purgeOldFiles() {
 			sort.Sort(sort.IntSlice(fIndexes))
 			toDelete := fIndexes[0 : len(fIndexes)-f.MaxFiles]
 			for _, fIndex := range toDelete {
-				fname := filepath.Join(f.path, fmt.Sprintf("%s.%d", f.baseFileName, fIndex))
+				fname := filepath.Join(f.path, fmt.Sprintf("%s.%d%s", f.baseFileName, fIndex, f.suffix))
 				err := os.RemoveAll(fname)
 				if err != nil {
 					f.logger.Error("error removing file", "filename", fname, "err", err)
