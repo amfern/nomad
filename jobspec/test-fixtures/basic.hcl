@@ -145,7 +145,6 @@ job "binstore-storagelocker" {
       logs {
         max_files      = 14
         max_file_size  = 101
-        file_extension = "txt"
       }
 
       env {

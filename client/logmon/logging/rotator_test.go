@@ -15,7 +15,7 @@ import (
 var (
 	pathPrefix   = "logrotator"
 	baseFileName = "redis.stdout"
-	fileExtension = "txt"
+	fileExtension = ""
 )
 
 func TestFileRotator_IncorrectPath(t *testing.T) {
