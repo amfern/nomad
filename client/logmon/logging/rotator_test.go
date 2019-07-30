@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	pathPrefix   = "logrotator"
-	baseFileName = "redis.stdout"
+	pathPrefix    = "logrotator"
+	baseFileName  = "redis.stdout"
 	fileExtension = ""
 )
 
