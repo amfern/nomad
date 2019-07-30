@@ -998,6 +998,7 @@ func parseTasks(jobName string, taskGroupName string, result *[]*api.Task, list 
 			valid := []string{
 				"max_files",
 				"max_file_size",
+				"file_extension",
 			}
 			if err := helper.CheckHCLKeys(logsBlock.Val, valid); err != nil {
 				return multierror.Prefix(err, fmt.Sprintf("'%s', logs ->", n))

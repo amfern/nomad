@@ -15,12 +15,12 @@ import (
 var (
 	pathPrefix   = "logrotator"
 	baseFileName = "redis.stdout"
-	suffix = ".txt"
+	fileExtension = "txt"
 )
 
 func TestFileRotator_IncorrectPath(t *testing.T) {
 	t.Parallel()
-	if _, err := NewFileRotator("/foo", baseFileName, 10, 10, testlog, HCLogger.t(), suffix); err == nil {
+	if _, err := NewFileRotator("/foo", baseFileName, 10, 10, fileExtension, testlog.HCLogger(t)); err == nil {
 		t.Fatalf("expected error")
 	}
 }
@@ -34,7 +34,7 @@ func TestFileRotator_CreateNewFile(t *testing.T) {
 	}
 	defer os.RemoveAll(path)
 
-	_, err = NewFileRotator(path, baseFileName, 10, 10, testlog.HCLogger(t), suffix)
+	_, err = NewFileRotator(path, baseFileName, 10, 10, fileExtension, testlog.HCLogger(t))
 	if err != nil {
 		t.Fatalf("test setup err: %v", err)
 	}
@@ -62,7 +62,7 @@ func TestFileRotator_OpenLastFile(t *testing.T) {
 		t.Fatalf("test setup failure: %v", err)
 	}
 
-	fr, err := NewFileRotator(path, baseFileName, 10, 10, testlog.HCLogger(t), suffix)
+	fr, err := NewFileRotator(path, baseFileName, 10, 10, fileExtension, testlog.HCLogger(t))
 	if err != nil {
 		t.Fatalf("test setup err: %v", err)
 	}
@@ -86,7 +86,7 @@ func TestFileRotator_WriteToCurrentFile(t *testing.T) {
 		t.Fatalf("test setup failure: %v", err)
 	}
 
-	fr, err := NewFileRotator(path, baseFileName, 10, 5, testlog.HCLogger(t), suffix)
+	fr, err := NewFileRotator(path, baseFileName, 10, 5, fileExtension, testlog.HCLogger(t))
 	if err != nil {
 		t.Fatalf("test setup err: %v", err)
 	}
@@ -119,7 +119,7 @@ func TestFileRotator_RotateFiles(t *testing.T) {
 	}
 	defer os.RemoveAll(path)
 
-	fr, err := NewFileRotator(path, baseFileName, 10, 5, testlog.HCLogger(t), suffix)
+	fr, err := NewFileRotator(path, baseFileName, 10, 5, fileExtension, testlog.HCLogger(t))
 	if err != nil {
 		t.Fatalf("test setup err: %v", err)
 	}
@@ -178,7 +178,7 @@ func TestFileRotator_RotateFiles_Boundary(t *testing.T) {
 	}
 	defer os.RemoveAll(path)
 
-	fr, err := NewFileRotator(path, baseFileName, 10, 5, testlog.HCLogger(t), suffix)
+	fr, err := NewFileRotator(path, baseFileName, 10, 5, fileExtension, testlog.HCLogger(t))
 	if err != nil {
 		t.Fatalf("test setup err: %v", err)
 	}
@@ -244,7 +244,7 @@ func TestFileRotator_WriteRemaining(t *testing.T) {
 		t.Fatalf("test setup failure: %v", err)
 	}
 
-	fr, err := NewFileRotator(path, baseFileName, 10, 5, testlog.HCLogger(t), suffix)
+	fr, err := NewFileRotator(path, baseFileName, 10, 5, fileExtension, testlog.HCLogger(t))
 	if err != nil {
 		t.Fatalf("test setup err: %v", err)
 	}
@@ -317,7 +317,7 @@ func TestFileRotator_PurgeOldFiles(t *testing.T) {
 	}
 	defer os.RemoveAll(path)
 
-	fr, err := NewFileRotator(path, baseFileName, 2, 2, testlog.HCLogger(t), suffix)
+	fr, err := NewFileRotator(path, baseFileName, 2, 2, fileExtension, testlog.HCLogger(t))
 	if err != nil {
 		t.Fatalf("test setup err: %v", err)
 	}
@@ -367,7 +367,7 @@ func benchmarkRotatorWithInputSize(size int, b *testing.B) {
 	}
 	defer os.RemoveAll(path)
 
-	fr, err := NewFileRotator(path, baseFileName, 5, 1024*1024, testlog.HCLogger(b), suffix)
+	fr, err := NewFileRotator(path, baseFileName, 5, 1024*1024, fileExtension, testlog.HCLogger(b))
 	if err != nil {
 		b.Fatalf("test setup err: %v", err)
 	}

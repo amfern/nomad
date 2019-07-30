@@ -23,7 +23,7 @@ func (c *logmonClient) Start(cfg *LogConfig) error {
 		MaxFileSizeMb:  uint32(cfg.MaxFileSizeMB),
 		StdoutFifo:     cfg.StdoutFifo,
 		StderrFifo:     cfg.StderrFifo,
-		Suffix:         cfg.Suffix,
+		FileExtension:  cfg.FileExtension,
 	}
 	_, err := c.client.Start(context.Background(), req)
 	return grpcutils.HandleGrpcErr(err, c.doneCtx)

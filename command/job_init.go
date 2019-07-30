@@ -439,8 +439,9 @@ job "example" {
       #     https://www.nomadproject.io/docs/job-specification/logs.html
       #
       # logs {
-      #   max_files     = 10
-      #   max_file_size = 15
+      #   max_files      = 10
+      #   max_file_size  = 15
+      #   file_extension = "txt"
       # }
 
       # The "resources" stanza describes the requirements a task needs to

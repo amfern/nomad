@@ -139,7 +139,7 @@ func (h *DriverHarness) MkAllocDir(t *drivers.TaskConfig, enableLogs bool) func(
 			StderrFifo:    t.StderrPath,
 			MaxFiles:      10,
 			MaxFileSizeMB: 10,
-			Suffix:        ".txt",
+			FileExtension: "txt",
 		})
 		require.NoError(h.t, err)
 
